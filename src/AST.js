@@ -59,10 +59,9 @@ class AST {
 
 			// attributes
 			args.push(this.attributes());
+			this.tags.push(startTag);
 
 			let elements = [];
-
-			this.tags.push(startTag);
 
 			while(this.tokens.length > 0 && !this.close(startTag)) {
 				elements.push(this.element());
@@ -84,20 +83,29 @@ class AST {
 		}
 	}
 
-	close(name) {
-		var isClosingTag = (
-			this.peekAhead(0, '</') &&
-			this.peekAhead(1, name) && this.peekAhead(2, '>')
-		);
+	peekClose(expect) {
+		return expect.every((value, i) => {
+			return this.peekAhead(i, value);
+		});
+	}
 
-		if(isClosingTag) {
-			this.consume('</') &&
-			this.consume(name) && this.consume('>');
-			this.tags.pop();
-			return true;
+	consumeClose(expect) {
+		for(let i = 0; i < expect.length; i++) {
+			this.consume(expect[i]);
 		}
 
-		return isClosingTag;
+		return this.tags.pop();
+	}
+
+	close(name) {
+		let expect = [];
+		expect.push('</', name, '>');
+
+		if(this.peekClose(expect)) {
+			return this.consumeClose(expect);
+		}
+
+		return this.peekClose(expect);
 	}
 
 	attributes() {
