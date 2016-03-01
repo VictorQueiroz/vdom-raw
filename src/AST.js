@@ -11,6 +11,7 @@ class AST {
 
 	ast(text) {
 		this.text = text;
+		this.tags = [];
 		this.tokens = this.lexer.lex(text);
 
 		return this.program();
@@ -21,6 +22,9 @@ class AST {
 
 		while(this.tokens.length > 0) {
 			body.push(this.expressionStatement());
+			if(this.tags.length > 0) {
+				throw new Error(`unclosed tags -> ${this.tags.join(' -> ')}`);
+			}
 		}
 
 		return {
@@ -39,24 +43,28 @@ class AST {
 	element() {
 		// start of the element
 		if(this.expect('<')) {
-			let startTag,
-					args = [];
+			let args = [];
 
 			// tag name
-			if(this.peek().type == Lexer.Identifier) {
-				startTag = this.consume().value;
-				args.push({
-					type: Syntax.Literal,
-					value: startTag
-				});
+			if(this.peek().type !== Lexer.Identifier) {
+				throw new Error('impossible');
 			}
+
+			let startTag = this.consume().value;
+
+			args.push({
+				type: Syntax.Literal,
+				value: startTag
+			});
 
 			// attributes
 			args.push(this.attributes());
 
 			let elements = [];
 
-			while(!this.close(startTag)) {
+			this.tags.push(startTag);
+
+			while(this.tokens.length > 0 && !this.close(startTag)) {
 				elements.push(this.element());
 			}
 
@@ -85,6 +93,7 @@ class AST {
 		if(isClosingTag) {
 			this.consume('</') &&
 			this.consume(name) && this.consume('>');
+			this.tags.pop();
 			return true;
 		}
 

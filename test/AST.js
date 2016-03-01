@@ -136,4 +136,10 @@ describe('AST', function() {
 			}]
 		});
 	});
+
+	it('should throw for unclosed tags', function() {
+		assert.throws(function() {
+			ast.ast('<span><div></div>');
+		});
+	});
 });
