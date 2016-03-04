@@ -1,12 +1,12 @@
 {
   "name": "vdom-raw",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.2.0",
+  "description": "Build raw HTML into Virtual DOM syntax",
   "main": "index.js",
   "scripts": {
     "test": "mocha test/*"
   },
-  "author": "",
+  "author": "Victor Queiroz <victorcqueirozg@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "escodegen": "^1.8.0"

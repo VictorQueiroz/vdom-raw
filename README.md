@@ -4,10 +4,10 @@ Builds raw HTML into [virtual-dom](https://github.com/Matt-Esch/virtual-dom) syn
 
 ### Usage
 ```js
-var raw = require('vdom-raw');
-raw.parseString(`<div>
-	<span dataBind="user.name"></span>
-<div>`);
+var raw = require('vdom-raw').compile;
+raw(`<div><span dataBind="user.name"></span><div>`, {
+	h: require('virtual-dom/h')
+});
 ```
 
 #### Results in

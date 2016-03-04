@@ -1,4 +1,5 @@
-var AST = require('./src/AST'),
+var vm = require('vm'),
+		AST = require('./src/AST'),
 		escodegen = require('escodegen');
 
 function parseString(html) {
@@ -10,8 +11,14 @@ function parseString(html) {
 	}
 }
 
-console.log(parseString(`<div>
-	<span></span>
-</div>`));
+function compile(html, contextData) {
+	var script = new vm.Script(parseString(html)),
+			context = new vm.createContext(contextData);
 
-module.exports = parseString;
+	return script.runInContext(context);
+}
+
+module.exports = {
+	compile: compile,
+	AST: AST
+};
