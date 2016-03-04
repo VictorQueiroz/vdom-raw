@@ -137,6 +137,47 @@ describe('AST', function() {
 		});
 	});
 
+	it('should read unvalued attributes', function() {
+		assert.deepEqual(ast.ast('<div attribute></div>'), {
+			type: Syntax.Program,
+			body: [{
+				type: Syntax.ExpressionStatement,
+				expression: {
+					type: Syntax.CallExpression,
+					callee: {
+						type: Syntax.Identifier,
+						name: 'h'
+					},
+					arguments: [{
+						type: Syntax.Literal,
+						value: 'div'
+					}, {
+						type: Syntax.ObjectExpression,
+						properties: [{
+							key: {
+								type: Syntax.Identifier,
+								name: 'attribute'
+							},
+							value: {
+								type: Syntax.Literal,
+								value: ''
+							}
+						}]
+					}, {
+						type: Syntax.ArrayExpression,
+						elements: []
+					}]
+				}
+			}]
+		});
+	});
+
+	it('should throw for non string or numeric literal attribute value', function() {
+		assert.throws(function() {
+			ast.ast('<span attribute=asdsad></span>');
+		});
+	});
+
 	it('should throw for unclosed tags', function() {
 		assert.throws(function() {
 			ast.ast('<span><div></div>');

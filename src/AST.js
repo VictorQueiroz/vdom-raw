@@ -118,11 +118,16 @@ class AST {
 			}
 
 			if(this.expect('=')) {
-				if(this.peek().type == Lexer.StringLiteral) {
-					prop.value.value = this.consume().value;
-				} else {
-					this.throwError('is unexpected, expecting a string literal');
+				switch(this.peek().type) {
+					case Lexer.NumericLiteral:
+					case Lexer.StringLiteral:
+						prop.value.value = this.consume().value;
+						break;					
+					default:
+						this.throwError('is unexpected, expecting a string (or numeric) literal');
 				}
+			} else {
+				prop.value.value = '';
 			}
 
 			props.push(prop);
