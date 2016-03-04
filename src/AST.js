@@ -93,7 +93,7 @@ class AST {
 	}
 
 	attributes() {
-		var props = [];
+		let props = [];
 
 		while(this.tokens.length > 0 && !this.expect('>')) {
 			let prop = {
