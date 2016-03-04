@@ -95,7 +95,7 @@ class AST {
 	attributes() {
 		var props = [];
 
-		while(!this.expect('>')) {
+		while(this.tokens.length > 0 && !this.expect('>')) {
 			let prop = {
 				key: {
 					type: Syntax.Identifier
