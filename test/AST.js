@@ -142,4 +142,21 @@ describe('AST', function() {
 			ast.ast('<span><div></div>');
 		});
 	});
+
+	it('should throw for previously closed tags', function() {
+		assert.throws(function() {
+			ast.ast(`
+				<span>
+					<ul>
+						<span><div></div></ul></span>
+				</span>
+			`);
+		});
+	});
+
+	it('should throw for unexpected closed tags', function() {
+		assert.throws(function() {
+			ast.ast('<span></ul></span>');
+		});
+	});
 });

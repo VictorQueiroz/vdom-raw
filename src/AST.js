@@ -45,27 +45,36 @@ class AST {
 		if(this.expect('<')) {
 			let args = [];
 
-			// tag name
 			if(this.peek().type !== Lexer.Identifier) {
 				throw new Error('impossible');
 			}
 
-			let startTag = this.consume().value;
+			// tag name
+			let tagName = this.consume().value;
+			this.tags.push(tagName);
 
 			args.push({
 				type: Syntax.Literal,
-				value: startTag
+				value: tagName
 			});
 
 			// attributes
 			args.push(this.attributes());
-			this.tags.push(startTag);
 
 			let elements = [];
 
-			while(this.tokens.length > 0 && !this.close(startTag)) {
-				elements.push(this.element());
+			if(!this.peek('</')) {
+				while(!this.peek('</') && this.tokens.length > 0) {
+					elements.push(this.element());
+				}
 			}
+
+			// expect for the closing of the tag
+			this.consume('</');
+			this.consume(tagName);
+			this.consume('>');
+
+			this.tags.pop();
 
 			args.push({
 				type: Syntax.ArrayExpression,
@@ -81,31 +90,6 @@ class AST {
 				arguments: args
 			};
 		}
-	}
-
-	peekClose(expect) {
-		return expect.every((value, i) => {
-			return this.peekAhead(i, value);
-		});
-	}
-
-	consumeClose(expect) {
-		for(let i = 0; i < expect.length; i++) {
-			this.consume(expect[i]);
-		}
-
-		return this.tags.pop();
-	}
-
-	close(name) {
-		let expect = [];
-		expect.push('</', name, '>');
-
-		if(this.peekClose(expect)) {
-			return this.consumeClose(expect);
-		}
-
-		return this.peekClose(expect);
 	}
 
 	attributes() {
